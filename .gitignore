@@ -1,0 +1,29 @@
+# Archivos temporales
+.kiro_tmp/
+*.backup
+*.backup2
+app.js.backup
+app.js.backup2
+
+# Debug
+debug-app.html
+debug-productos.html
+test-local.html
+test-sheets.html
+debug-sheets.html
+
+# Archivos innecesarios
+*.zip
+img/*.zip
+img/MAJOS*
+
+# Documentación interna (opcional mantener)
+# CAMBIOS_REALIZADOS.md
+# ESTADO_ACTUAL.md
+
+# VS Code
+.vscode/
+
+# Sistema
+Thumbs.db
+.DS_Store

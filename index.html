@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRZ Calzado Mayoreo - Distribuidora de Calzado</title>
+  <meta name="description" content="Distribuidora de calzado por mayoreo. Escolar, bota, tenis, dama, caballero y más. Mínimo media docena.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="index">
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="nav-logo">
+      <img src="logo/logo.jpg" alt="PRZ Logo" style="height:50px;width:auto;border-radius:var(--radius-sm);">
+      <div>
+        <span class="logo-text">PRZ</span>
+        <span class="logo-sub">Calzado Mayoreo</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="active">Inicio</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="catalogo.html?categoria=escolar">Escolar</a>
+      <a href="catalogo.html?categoria=bota">Botas</a>
+      <a href="catalogo.html?categoria=tenis">Tenis</a>
+      <a href="catalogo.html?categoria=dama">Dama</a>
+      <a href="catalogo.html?categoria=caballero">Caballero</a>
+    </div>
+    <div class="nav-actions">
+      <a href="carrito.html" class="cart-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        Carrito
+        <span class="cart-count hidden">0</span>
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">Inicio</a>
+    <a href="catalogo.html">Catálogo Completo</a>
+    <a href="catalogo.html?categoria=escolar">Escolar</a>
+    <a href="catalogo.html?categoria=bota">Botas</a>
+    <a href="catalogo.html?categoria=tenis">Tenis</a>
+    <a href="catalogo.html?categoria=dama">Dama</a>
+    <a href="catalogo.html?categoria=caballero">Caballero</a>
+    <a href="carrito.html">🛒 Carrito</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-shape hero-shape-1"></div>
+    <div class="hero-shape hero-shape-2"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Distribuidora Mayorista</div>
+      <h1 class="hero-title">CALZADO<br>PRZ</h1>
+      <p class="hero-title-sub">Mayoreo de Calzado</p>
+      <p class="hero-description">
+        Distribuidora líder en calzado por mayoreo. Escolar, botas, tenis, dama y caballero.
+        Precios directos de fábrica desde media docena.
+      </p>
+      <div class="hero-actions">
+        <a href="catalogo.html" class="btn btn-primary btn-lg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          Ver Catálogo
+        </a>
+        <a href="https://wa.me/522213408041" target="_blank" class="btn btn-secondary btn-lg">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Contactar por WhatsApp
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="stat-number">15+</div>
+          <div class="stat-label">Categorías</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-number">6</div>
+          <div class="stat-label">Pares mínimo</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Mayoreo</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-number">MX</div>
+          <div class="stat-label">Envíos</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORÍAS -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Nuestras Líneas</span>
+        <h2 class="section-title">Explora por <span>Categoría</span></h2>
+        <p class="section-subtitle">Amplio catálogo de calzado para toda la familia. Encuentra la línea que mejor se adapte a tu negocio.</p>
+      </div>
+      <div class="categories-grid">
+        <a href="catalogo.html?categoria=escolar" class="category-card">
+          <div class="category-icon">🎒</div>
+          <span class="category-name">Escolar</span>
+          <span class="category-count">Tallas 14-21</span>
+        </a>
+        <a href="catalogo.html?categoria=bota" class="category-card">
+          <div class="category-icon">🥾</div>
+          <span class="category-name">Bota</span>
+          <span class="category-count">Vaquera · Industrial</span>
+        </a>
+        <a href="catalogo.html?categoria=tenis" class="category-card">
+          <div class="category-icon">👟</div>
+          <span class="category-name">Tenis</span>
+          <span class="category-count">Sport · Casual</span>
+        </a>
+        <a href="catalogo.html?categoria=multimarca" class="category-card">
+          <div class="category-icon">⭐</div>
+          <span class="category-name">Multimarca</span>
+          <span class="category-count">Variedad</span>
+        </a>
+        <a href="catalogo.html?categoria=dama" class="category-card">
+          <div class="category-icon">👠</div>
+          <span class="category-name">Dama</span>
+          <span class="category-count">Tallas 22-26</span>
+        </a>
+        <a href="catalogo.html?categoria=caballero" class="category-card">
+          <div class="category-icon">👞</div>
+          <span class="category-name">Caballero</span>
+          <span class="category-count">Tallas 25-30</span>
+        </a>
+        <a href="catalogo.html?categoria=vestir" class="category-card">
+          <div class="category-icon">🎩</div>
+          <span class="category-name">Vestir</span>
+          <span class="category-count">Formal · Elegante</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CÓMO FUNCIONA -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Sistema Mayoreo</span>
+        <h2 class="section-title">¿Cómo <span>Funciona</span>?</h2>
+        <p class="section-subtitle">Proceso simple y directo para hacer tu pedido mayorista.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3 class="step-title">Explora el Catálogo</h3>
+          <p class="step-desc">Navega por nuestras categorías y encuentra los modelos que quieres para tu negocio.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3 class="step-title">Selecciona Tallas</h3>
+          <p class="step-desc">Elige las tallas y cantidades. Mínimo 6 pares (media docena) del mismo color y modelo.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3 class="step-title">Agrega al Carrito</h3>
+          <p class="step-desc">Añade todos los productos que necesitas. El sistema calcula automáticamente el total.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <h3 class="step-title">Envía por WhatsApp</h3>
+          <p class="step-desc">Con un clic, tu pedido completo se envía a nuestro WhatsApp. Te contactamos para confirmar.</p>
+        </div>
+      </div>
+
+      <!-- Mayoreo info -->
+      <div style="margin-top:3rem;background:rgba(0,102,255,0.08);border:1px solid rgba(0,102,255,0.2);border-radius:var(--radius-xl);padding:2.5rem;text-align:center">
+        <h3 style="font-size:1.5rem;font-weight:800;margin-bottom:1rem">Sistema de Precios Mayoreo</h3>
+        <p style="color:var(--white-60);margin-bottom:2rem">Los precios se muestran por pieza. El pedido mínimo es de 6 pares del mismo color y modelo.</p>
+        <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap">
+          <div style="background:var(--white-10);border-radius:var(--radius-lg);padding:1.5rem 2rem;min-width:180px">
+            <div style="font-size:0.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue-light);margin-bottom:0.5rem">Media Docena</div>
+            <div style="font-size:1.75rem;font-weight:900">6 pares</div>
+            <div style="font-size:0.85rem;color:var(--white-60);margin-top:0.25rem">Precio × 6</div>
+          </div>
+          <div style="background:linear-gradient(135deg,rgba(0,102,255,0.2),rgba(0,195,255,0.1));border:1px solid rgba(0,102,255,0.3);border-radius:var(--radius-lg);padding:1.5rem 2rem;min-width:180px">
+            <div style="font-size:0.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem">Docena</div>
+            <div style="font-size:1.75rem;font-weight:900">12 pares</div>
+            <div style="font-size:0.85rem;color:var(--white-60);margin-top:0.25rem">Precio × 12</div>
+          </div>
+          <div style="background:var(--white-10);border-radius:var(--radius-lg);padding:1.5rem 2rem;min-width:180px">
+            <div style="font-size:0.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue-light);margin-bottom:0.5rem">Ejemplo</div>
+            <div style="font-size:1.1rem;font-weight:700">$260/pieza</div>
+            <div style="font-size:0.85rem;color:var(--white-60);margin-top:0.25rem">6p = $1,560 · 12p = $3,120</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTOS DESTACADOS -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Productos</span>
+        <h2 class="section-title">Productos <span>Destacados</span></h2>
+        <p class="section-subtitle">Una selección de nuestros modelos más populares.</p>
+      </div>
+      <div class="products-grid" id="featured-products">
+        <!-- Rendered by JS -->
+      </div>
+      <div style="text-align:center;margin-top:2.5rem">
+        <a href="catalogo.html" class="btn btn-primary btn-lg">Ver Catálogo Completo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA WHATSAPP -->
+  <section class="section">
+    <div class="container">
+      <div style="background:linear-gradient(135deg,rgba(0,102,255,0.15),rgba(0,195,255,0.08));border:1px solid rgba(0,102,255,0.25);border-radius:var(--radius-xl);padding:3.5rem 2rem;text-align:center">
+        <div style="font-size:3rem;margin-bottom:1rem">📱</div>
+        <h2 style="font-size:clamp(1.75rem,4vw,2.5rem);font-weight:800;margin-bottom:1rem">¿Tienes dudas o quieres hacer un pedido?</h2>
+        <p style="color:var(--white-60);max-width:500px;margin:0 auto 2rem;font-size:1rem">Contáctanos directamente por WhatsApp. Respondemos rápido y te asesoramos con tu pedido mayorista.</p>
+        <a href="https://wa.me/522213408041?text=Hola%2C%20me%20interesa%20hacer%20un%20pedido%20mayorista%20de%20calzado%20PRZ" target="_blank" class="btn btn-whatsapp btn-lg">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Escribir por WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="logo/logo.jpg" alt="PRZ Logo" style="height:60px;width:auto;border-radius:var(--radius-sm);margin-bottom:0.5rem;">
+        <span class="logo-text">PRZ</span>
+        <span class="logo-sub">Calzado Mayoreo</span>
+        <p>Distribuidora de calzado por mayoreo. Ofrecemos las mejores marcas y modelos para tu negocio. Venta mínima de media docena.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Categorías</h4>
+        <ul>
+          <li><a href="catalogo.html?categoria=escolar">Escolar</a></li>
+          <li><a href="catalogo.html?categoria=bota">Botas</a></li>
+          <li><a href="catalogo.html?categoria=tenis">Tenis</a></li>
+          <li><a href="catalogo.html?categoria=dama">Dama</a></li>
+          <li><a href="catalogo.html?categoria=caballero">Caballero</a></li>
+          <li><a href="catalogo.html?categoria=vestir">Vestir</a></li>
+          <li><a href="catalogo.html?categoria=multimarca">Multimarca</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <div class="footer-contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+          </svg>
+          +52 221 340 8041
+        </div>
+        <div class="footer-contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          México
+        </div>
+        <a href="https://wa.me/522213408041" target="_blank" class="footer-whatsapp">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          WhatsApp Directo
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 Distribuidora de Calzado PRZ. Todos los derechos reservados.</span>
+      <span>Venta exclusiva por mayoreo · Mínimo 6 pares</span>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
