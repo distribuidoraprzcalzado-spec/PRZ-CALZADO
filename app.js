@@ -24,7 +24,7 @@ const GOOGLE_SHEETS_ID = '1-9lSJ2UdvV51nQYLoBv-w23clyoKYnR70j0_W18GeAQ';
  */
 async function cargarProductosDesdeGoogleSheets() {
   const CACHE_KEY = 'prz_productos_cache';
-  const CACHE_VERSION = 'v7';
+  const CACHE_VERSION = 'v8';
   const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
   // Mostrar productos del caché inmediatamente si existen y son de la versión correcta
@@ -150,6 +150,9 @@ function parseCSVToProducts(csv) {
       .replace(/\s+tac[oó]n\s+[\d.]+\s*cm/gi, '')
       .replace(/\s+[\d.]+\s*cm/gi, '')
       .replace(/\s+tac[oó]n\b/gi, '')
+      .replace(/\s+suela\s+\w+/gi, '')
+      .replace(/\s+cocido\b/gi, '')
+      .replace(/\s+goma\b/gi, '')
       .replace(/\s{2,}/g, ' ')
       .trim();
 
@@ -158,6 +161,9 @@ function parseCSVToProducts(csv) {
     const taconMatch = nombreRaw.match(/tac[oó]n\s+([\d.]+)\s*cm/i);
     if (taconMatch) specs.push('Tacón de ' + taconMatch[1] + ' cm');
     else { const cmMatch = nombreRaw.match(/([\d.]+)\s*cm/i); if (cmMatch) specs.push('Altura ' + cmMatch[1] + ' cm'); }
+    const suelaMatch = nombreRaw.match(/suela\s+(\w+)/i);
+    if (suelaMatch) specs.push('Suela ' + suelaMatch[1]);
+    if (/cocido/i.test(nombreRaw)) specs.push('Costura cocida');
     const descripcionBase = (specs.length ? specs.join('. ') + '. ' : '') + 'Venta por mayoreo, mínimo media docena del mismo color y modelo.';
     
     if (!nombre || precio === 0) continue;
@@ -219,11 +225,14 @@ function parseCSVToProducts(csv) {
     const altura = String(fullId).split('/')[2] || '5';
 
     let imagePath;
-    if (baseId === 'NK954') {
+    if (baseId === '954') {
+      // NK954: imágenes NK954_NNN.png, variantCode es el número (108-120)
       imagePath = 'img/NK954/NK954_' + variantCode + '.png';
-    } else if (baseId === 'NK950') {
+    } else if (baseId === '950') {
+      // NK950: imágenes 950_CODIGO_IV.png
       imagePath = 'img/NK950/950_' + variantCode + '_' + altura + '.png';
     } else if (baseId === 'T90') {
+      // T90: imágenes T90_CODIGO_LETRA.png
       imagePath = 'img/T90/T90_' + variantCode + '_' + altura + '.png';
     } else {
       imagePath = 'img/' + carpeta + '/' + prefijo + '_' + variantCode + '_' + altura + '.jpg';
@@ -231,7 +240,7 @@ function parseCSVToProducts(csv) {
     const fallbackImage = imagePath;
 
     // Modelos multimarca fijos: T90, NK950, NK954
-    const MODELOS_MM = ['T90', 'NK950', 'NK954'];
+    const MODELOS_MM = ['T90', '950', '954'];
     const esModeloMM = MODELOS_MM.includes(baseId);
 
     // Para modelos multimarca: 4 bloques fijos de numeracion
@@ -281,7 +290,7 @@ function parseCSVToProducts(csv) {
 function determinateCategory(nombre, modelo) {
   const text = (nombre + ' ' + modelo).toLowerCase();
 
-  const MODELOS_MM_CAT = ['T90', 'NK950', 'NK954'];
+  const MODELOS_MM_CAT = ['T90', '950', '954'];
   if (MODELOS_MM_CAT.includes(modelo)) return 'multimarca';
 
   if (text.includes('escolar')) return 'escolar';
@@ -732,7 +741,7 @@ function initProducto() {
     console.log('baseId del producto:', producto.baseId, '| con18al21:', producto.baseId === '095');
     const con18al21 = producto.baseId === '095';
     const rangosExistentes = tallasNormalizadas.map(t => t.rango);
-    const esMMProd = ['T90', 'NK950', 'NK954'].includes(producto.baseId);
+    const esMMProd = ['T90', '950', '954'].includes(producto.baseId);
     if (!esMMProd && !rangosExistentes.includes('3 AL 6')) {
       tallasNormalizadas.push({ rango: '3 AL 6', precio: producto.precio, stock: 0 });
     }
