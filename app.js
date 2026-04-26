@@ -538,6 +538,10 @@ function initCatalogo() {
   renderProducts(currentFilter);
 }
 
+function _labelCategoria(cat) {
+  return cat === 'dama' ? 'Zapatilla' : cat.charAt(0).toUpperCase() + cat.slice(1);
+}
+
 function renderProductCard(producto) {
   const tieneImagen = !!producto.imagen;
   const imagenHTML = tieneImagen
@@ -548,10 +552,10 @@ function renderProductCard(producto) {
     <a href="producto.html?id=${producto.id}" class="product-card">
       <div class="${claseImagen}" style="position:relative;">
         ${imagenHTML}
-        <span class="product-badge" style="position:absolute;top:12px;left:12px;z-index:2;">${producto.categoria}</span>
+        <span class="product-badge" style="position:absolute;top:12px;left:12px;z-index:2;">${_labelCategoria(producto.categoria)}</span>
       </div>
       <div class="product-info">
-        <span class="product-category">${producto.categoria}</span>
+        <span class="product-category">${_labelCategoria(producto.categoria)}</span>
         <h3 class="product-name">${producto.nombre}</h3>
         <p style="font-size:0.8rem;color:var(--white-60);margin-top:0.25rem">Color: ${producto.color}</p>
         <div class="product-price-row">
@@ -589,13 +593,13 @@ function initProducto() {
   // Breadcrumb category link
   const breadcrumbCat = document.getElementById('breadcrumb-cat');
   if (breadcrumbCat) {
-    breadcrumbCat.textContent = producto.categoria.charAt(0).toUpperCase() + producto.categoria.slice(1);
+    breadcrumbCat.textContent = _labelCategoria(producto.categoria);
     breadcrumbCat.href = `catalogo.html?categoria=${producto.categoria}`;
   }
 
   // Fill product info
   document.getElementById('product-name').textContent = producto.nombre;
-  document.getElementById('product-category').textContent = producto.categoria;
+  document.getElementById('product-category').textContent = _labelCategoria(producto.categoria);
   document.getElementById('product-desc').textContent = producto.descripcion;
   document.getElementById('product-price').textContent = formatCurrency(producto.precio);
 
