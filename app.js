@@ -24,7 +24,7 @@ const GOOGLE_SHEETS_ID = '1-9lSJ2UdvV51nQYLoBv-w23clyoKYnR70j0_W18GeAQ';
  */
 async function cargarProductosDesdeGoogleSheets() {
   const CACHE_KEY = 'prz_productos_cache';
-  const CACHE_VERSION = 'v5';
+  const CACHE_VERSION = 'v6';
   const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
   // Mostrar productos del caché inmediatamente si existen y son de la versión correcta
@@ -227,13 +227,69 @@ function parseCSVToProducts(csv) {
     };
     const prefijo = prefijoMap[baseId] || baseId;
 
-    // Extensión según el modelo — todos usan jpg
-    const ext = 'jpg';
-
     const altura = String(fullId).split('/')[2] || '5';
-    const imagePath = `img/${carpeta}/${prefijo}_${variantCode}_${altura}.${ext}`;
+
+    // Modelos multimarca con imágenes PNG y rutas especiales
+
+    let imagePath;
+    if (baseId === 'NK954') {
+      // NK954: imágenes con nombre largo de Canva, variantCode es el número (108-120)
+      const nk954Files = {
+        '108': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 108.png',
+        '109': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 109.png',
+        '110': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 110.png',
+        '111': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 111.png',
+        '112': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 112.png',
+        '113': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 113.png',
+        '114': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 114.png',
+        '115': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 115.png',
+        '116': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 116.png',
+        '117': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 117.png',
+        '118': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 118.png',
+        '119': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 119.png',
+        '120': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 120.png',
+      };
+      const fileName = nk954Files[variantCode] || nk954Files[altura];
+      imagePath = fileName ? `img/NK954/${fileName}` : `img/NK954/Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 108.png`;
+    } else if (baseId === 'NK950') {
+      // NK950: archivos 950_CODIGO_IV.png
+      imagePath = `img/NK950/950_${variantCode}_${altura}.png`;
+    } else if (baseId === 'T90') {
+      // T90: archivos T90_CODIGO_LETRA.png
+      imagePath = `img/T90/T90_${variantCode}_${altura}.png`;
+    } else {
+      // Resto de modelos: jpg
+      const ext = 'jpg';
+      imagePath = `img/${carpeta}/${prefijo}_${variantCode}_${altura}.${ext}`;
+    }
     const fallbackImage = imagePath;
     
+    // Modelos multimarca con numeraciones fijas y sin surtido especial
+    const MODELOS_MULTIMARCA_FIJOS = ['T90', 'NK950', 'NK954'];
+    const esModeloMultimarcaFijo = MODELOS_MULTIMARCA_FIJOS.includes(baseId);
+
+    // Para modelos multimarca fijos: reemplazar tallas con los 4 bloques fijos
+    let tallasFinales = tallas;
+    if (esModeloMultimarcaFijo) {
+      // Bloques fijos: A=2al5, B=3al6, C=5al7.5, D=5al8
+      // Usar el precio del sheet si existe para cada bloque, sino el precio base
+      const bloquesFijos = [
+        { rango: '2 AL 5',   colKey: '2 AL 5'   },
+        { rango: '3 AL 6',   colKey: '3 AL 6'   },
+        { rango: '5 AL 7.5', colKey: '5 AL 7.5' },
+        { rango: '5 AL 8',   colKey: '5 AL 8'   },
+      ];
+      tallasFinales = bloquesFijos.map(b => {
+        // Buscar si el sheet tiene stock/precio para este bloque
+        const existing = tallas.find(t => t.rango === b.rango);
+        return {
+          rango: b.rango,
+          precio: existing ? existing.precio : precio,
+          stock: existing ? existing.stock : 999
+        };
+      });
+    }
+
     const producto = {
       id: uniqueId,
       fullId: fullId,
@@ -241,14 +297,15 @@ function parseCSVToProducts(csv) {
       variantCode: variantCode,
       nombre,
       modelo,
-      categoria: determinateCategory(nombre, modelo),
+      categoria: esModeloMultimarcaFijo ? 'multimarca' : determinateCategory(nombre, modelo),
       precio,
       descripcion: descripcionBase,
-      tallas,
+      tallas: tallasFinales,
       color: 'Varios',
       imagen: imagePath,
       imagenDetalle: imagePath,
-      imagenFallback: fallbackImage
+      imagenFallback: fallbackImage,
+      sinSurtidoEspecial: esModeloMultimarcaFijo
     };
     
     if (tieneEspecial) {
@@ -267,6 +324,10 @@ function parseCSVToProducts(csv) {
  * Determine product category based on name or model
  */
 function determinateCategory(nombre, modelo) {
+  // Modelos multimarca fijos siempre van a multimarca
+  const MODELOS_MULTIMARCA_FIJOS = ['T90', 'NK950', 'NK954'];
+  if (MODELOS_MULTIMARCA_FIJOS.includes(modelo)) return 'multimarca';
+
   const text = (nombre + ' ' + modelo).toLowerCase();
   
   if (text.includes('escolar')) return 'escolar';
@@ -713,10 +774,13 @@ function initProducto() {
 
     // Asegurar que siempre aparezcan 3 AL 6 y 18 AL 21 aunque no estén en el sheet
     // 18 AL 21 solo aplica para modelo 095 (zapatillas infantiles)
+    // Los modelos multimarca fijos (T90, NK950, NK954) ya tienen sus bloques definidos
     console.log('baseId del producto:', producto.baseId, '| con18al21:', producto.baseId === '095');
+    const MODELOS_MULTIMARCA_FIJOS_PROD = ['T90', 'NK950', 'NK954'];
+    const esMultimarcaFijo = MODELOS_MULTIMARCA_FIJOS_PROD.includes(producto.baseId);
     const con18al21 = producto.baseId === '095';
     const rangosExistentes = tallasNormalizadas.map(t => t.rango);
-    if (!rangosExistentes.includes('3 AL 6')) {
+    if (!esMultimarcaFijo && !rangosExistentes.includes('3 AL 6')) {
       tallasNormalizadas.push({ rango: '3 AL 6', precio: producto.precio, stock: 0 });
     }
     if (con18al21 && !rangosExistentes.includes('18 AL 21')) {
@@ -776,20 +840,21 @@ function initProducto() {
       `;
     }).join('');
 
-    // Botón "Armar Surtido Especial" con leyenda de tiempo
-    const armarWrap = document.createElement('div');
-    armarWrap.style.marginTop = '1rem';
-    armarWrap.innerHTML = `
-      <button class="btn btn-secondary btn-full" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap;" onclick="abrirSurtidoEspecial(${producto.id})">
-        <span style="white-space:nowrap;">Armar Surtido Especial</span>
-        <span style="font-size:0.75rem;opacity:0.7;font-weight:400;white-space:nowrap;">(6 tallas a elegir)</span>
-      </button>
-      <p style="font-size:0.72rem;color:var(--white-40);text-align:center;margin-top:0.5rem;line-height:1.4;">
-        ⏱ Los surtidos especiales tardan aprox. 20 días hábiles y requieren anticipo
-      </p>
-    `;
-    tallasContainer.parentElement.appendChild(armarWrap);
-  }
+    // Botón "Armar Surtido Especial" — solo para modelos que lo permiten
+    if (!producto.sinSurtidoEspecial) {
+      const armarWrap = document.createElement('div');
+      armarWrap.style.marginTop = '1rem';
+      armarWrap.innerHTML = `
+        <button class="btn btn-secondary btn-full" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap;" onclick="abrirSurtidoEspecial(${producto.id})">
+          <span style="white-space:nowrap;">Armar Surtido Especial</span>
+          <span style="font-size:0.75rem;opacity:0.7;font-weight:400;white-space:nowrap;">(6 tallas a elegir)</span>
+        </button>
+        <p style="font-size:0.72rem;color:var(--white-40);text-align:center;margin-top:0.5rem;line-height:1.4;">
+          ⏱ Los surtidos especiales tardan aprox. 20 días hábiles y requieren anticipo
+        </p>
+      `;
+      tallasContainer.parentElement.appendChild(armarWrap);
+    }
 
   // Init calculator
   updateCalculator(producto);
