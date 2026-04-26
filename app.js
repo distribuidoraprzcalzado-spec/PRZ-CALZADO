@@ -233,24 +233,8 @@ function parseCSVToProducts(csv) {
 
     let imagePath;
     if (baseId === 'NK954') {
-      // NK954: imágenes con nombre largo de Canva, variantCode es el número (108-120)
-      const nk954Files = {
-        '108': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 108.png',
-        '109': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 109.png',
-        '110': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 110.png',
-        '111': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 111.png',
-        '112': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 112.png',
-        '113': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 113.png',
-        '114': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 114.png',
-        '115': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 115.png',
-        '116': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 116.png',
-        '117': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 117.png',
-        '118': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 118.png',
-        '119': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 119.png',
-        '120': 'Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 120.png',
-      };
-      const fileName = nk954Files[variantCode] || nk954Files[altura];
-      imagePath = fileName ? `img/NK954/${fileName}` : `img/NK954/Plan de Marketing A4 Verde y Blanco Minimalista Funcional Moderno Gráfico (Tu historia) - 108.png`;
+      // NK954: imágenes renombradas a NK954_NNN.png
+      imagePath = `img/NK954/NK954_${variantCode}.png`;
     } else if (baseId === 'NK950') {
       // NK950: archivos 950_CODIGO_IV.png
       imagePath = `img/NK950/950_${variantCode}_${altura}.png`;
