@@ -24,7 +24,7 @@ const GOOGLE_SHEETS_ID = '1-9lSJ2UdvV51nQYLoBv-w23clyoKYnR70j0_W18GeAQ';
  */
 async function cargarProductosDesdeGoogleSheets() {
   const CACHE_KEY = 'prz_productos_cache';
-  const CACHE_VERSION = 'v9';
+  const CACHE_VERSION = 'v10';
   const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
   // Mostrar productos del caché inmediatamente si existen y son de la versión correcta
@@ -226,11 +226,11 @@ function parseCSVToProducts(csv) {
 
     let imagePath;
     if (baseId === '954') {
-      // NK954: imágenes NK954_NNN.png — el variantCode del sheet debe ser el número (108-120)
-      imagePath = 'img/NK954/NK954_' + variantCode + '.png';
+      // NK954: imágenes 954_CODIGO_IV.png en carpeta img/954/
+      imagePath = 'img/954/954_' + variantCode + '_' + altura + '.png';
     } else if (baseId === '950') {
-      // NK950: imágenes 950_CODIGO_IV.png
-      imagePath = 'img/NK950/950_' + variantCode + '_' + altura + '.png';
+      // NK950: imágenes 950_CODIGO_IV.png en carpeta img/950/
+      imagePath = 'img/950/950_' + variantCode + '_' + altura + '.png';
     } else if (baseId === 'T90') {
       // T90: imágenes T90_CODIGO_LETRA.png
       imagePath = 'img/T90/T90_' + variantCode + '_' + altura + '.png';
