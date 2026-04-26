@@ -1,7 +1,7 @@
 ﻿
 /* ============================================
    PRZ CALZADO MAYOREO - app.js
-   Logica principal del sitio
+   LÃ³gica principal del sitio
    ============================================ */
 
 'use strict';
@@ -24,7 +24,7 @@ const GOOGLE_SHEETS_ID = '1-9lSJ2UdvV51nQYLoBv-w23clyoKYnR70j0_W18GeAQ';
  */
 async function cargarProductosDesdeGoogleSheets() {
   const CACHE_KEY = 'prz_productos_cache';
-  const CACHE_VERSION = 'v6';
+  const CACHE_VERSION = 'v7';
   const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
   // Mostrar productos del caché inmediatamente si existen y son de la versión correcta
@@ -211,67 +211,38 @@ function parseCSVToProducts(csv) {
     }
     const uniqueId = Math.abs(hash);
     
-    // Mapa de baseId a nombre de carpeta (sin caracteres especiales)
-    const carpetaMap = {
-      'BCÑ': 'BCN',
-      'CÑ':  'CNA',
-      'MÑ':  'MNO'
-    };
+    // Mapa de baseId a carpeta y prefijo
+    const carpetaMap = { 'BCÑ': 'BCN', 'CÑ': 'CNA', 'MÑ': 'MNO' };
+    const prefijoMap = { 'BCÑ': 'BCN', 'CÑ': 'CNA', 'MÑ': 'MNO' };
     const carpeta = carpetaMap[baseId] || baseId;
-
-    // Mapa de baseId a prefijo de archivo (sin Ñ)
-    const prefijoMap = {
-      'BCÑ': 'BCN',
-      'CÑ':  'CNA',
-      'MÑ':  'MNO'
-    };
     const prefijo = prefijoMap[baseId] || baseId;
-
     const altura = String(fullId).split('/')[2] || '5';
-
-    // Modelos multimarca con imágenes PNG y rutas especiales
 
     let imagePath;
     if (baseId === 'NK954') {
-      // NK954: imágenes renombradas a NK954_NNN.png
-      imagePath = `img/NK954/NK954_${variantCode}.png`;
+      imagePath = 'img/NK954/NK954_' + variantCode + '.png';
     } else if (baseId === 'NK950') {
-      // NK950: archivos 950_CODIGO_IV.png
-      imagePath = `img/NK950/950_${variantCode}_${altura}.png`;
+      imagePath = 'img/NK950/950_' + variantCode + '_' + altura + '.png';
     } else if (baseId === 'T90') {
-      // T90: archivos T90_CODIGO_LETRA.png
-      imagePath = `img/T90/T90_${variantCode}_${altura}.png`;
+      imagePath = 'img/T90/T90_' + variantCode + '_' + altura + '.png';
     } else {
-      // Resto de modelos: jpg
-      const ext = 'jpg';
-      imagePath = `img/${carpeta}/${prefijo}_${variantCode}_${altura}.${ext}`;
+      imagePath = 'img/' + carpeta + '/' + prefijo + '_' + variantCode + '_' + altura + '.jpg';
     }
     const fallbackImage = imagePath;
-    
-    // Modelos multimarca con numeraciones fijas y sin surtido especial
-    const MODELOS_MULTIMARCA_FIJOS = ['T90', 'NK950', 'NK954'];
-    const esModeloMultimarcaFijo = MODELOS_MULTIMARCA_FIJOS.includes(baseId);
 
-    // Para modelos multimarca fijos: reemplazar tallas con los 4 bloques fijos
+    // Modelos multimarca fijos: T90, NK950, NK954
+    const MODELOS_MM = ['T90', 'NK950', 'NK954'];
+    const esModeloMM = MODELOS_MM.includes(baseId);
+
+    // Para modelos multimarca: 4 bloques fijos de numeracion
     let tallasFinales = tallas;
-    if (esModeloMultimarcaFijo) {
-      // Bloques fijos: A=2al5, B=3al6, C=5al7.5, D=5al8
-      // Usar el precio del sheet si existe para cada bloque, sino el precio base
-      const bloquesFijos = [
-        { rango: '2 AL 5',   colKey: '2 AL 5'   },
-        { rango: '3 AL 6',   colKey: '3 AL 6'   },
-        { rango: '5 AL 7.5', colKey: '5 AL 7.5' },
-        { rango: '5 AL 8',   colKey: '5 AL 8'   },
+    if (esModeloMM) {
+      tallasFinales = [
+        { rango: '2 AL 5',   precio: precio, stock: 999 },
+        { rango: '3 AL 6',   precio: precio, stock: 999 },
+        { rango: '5 AL 7.5', precio: precio, stock: 999 },
+        { rango: '5 AL 8',   precio: precio, stock: 999 }
       ];
-      tallasFinales = bloquesFijos.map(b => {
-        // Buscar si el sheet tiene stock/precio para este bloque
-        const existing = tallas.find(t => t.rango === b.rango);
-        return {
-          rango: b.rango,
-          precio: existing ? existing.precio : precio,
-          stock: existing ? existing.stock : 999
-        };
-      });
     }
 
     const producto = {
@@ -281,7 +252,7 @@ function parseCSVToProducts(csv) {
       variantCode: variantCode,
       nombre,
       modelo,
-      categoria: esModeloMultimarcaFijo ? 'multimarca' : determinateCategory(nombre, modelo),
+      categoria: esModeloMM ? 'multimarca' : determinateCategory(nombre, modelo),
       precio,
       descripcion: descripcionBase,
       tallas: tallasFinales,
@@ -289,7 +260,7 @@ function parseCSVToProducts(csv) {
       imagen: imagePath,
       imagenDetalle: imagePath,
       imagenFallback: fallbackImage,
-      sinSurtidoEspecial: esModeloMultimarcaFijo
+      sinSurtidoEspecial: esModeloMM
     };
     
     if (tieneEspecial) {
@@ -308,22 +279,22 @@ function parseCSVToProducts(csv) {
  * Determine product category based on name or model
  */
 function determinateCategory(nombre, modelo) {
-  // Modelos multimarca fijos siempre van a multimarca
-  const MODELOS_MULTIMARCA_FIJOS = ['T90', 'NK950', 'NK954'];
-  if (MODELOS_MULTIMARCA_FIJOS.includes(modelo)) return 'multimarca';
-
   const text = (nombre + ' ' + modelo).toLowerCase();
-  
+
+  const MODELOS_MM_CAT = ['T90', 'NK950', 'NK954'];
+  if (MODELOS_MM_CAT.includes(modelo)) return 'multimarca';
+
   if (text.includes('escolar')) return 'escolar';
   if (text.includes('bota')) return 'bota';
   if (text.includes('tenis') || text.includes('tennis')) return 'tenis';
   if (text.includes('zapatilla') || text.includes('dama') || text.includes('mujer')
       || text.includes('caña') || text.includes('moño') || text.includes('sandalia')
+      || text.includes('cana') || text.includes('mono')
       || text.includes('mule') || text.includes('stiletto') || text.includes('pump')) return 'dama';
   if (text.includes('caballero') || text.includes('hombre')) return 'caballero';
   if (text.includes('vestir') || text.includes('formal')) return 'vestir';
   if (text.includes('multimarca')) return 'multimarca';
-  
+
   return 'multimarca';
 }
 
@@ -597,10 +568,10 @@ function renderProductCard(producto) {
     <a href="producto.html?id=${producto.id}" class="product-card">
       <div class="${claseImagen}" style="position:relative;">
         ${imagenHTML}
-        <span class="product-badge" style="position:absolute;top:12px;left:12px;z-index:2;">${_labelCategoria(producto.categoria)}</span>
+        <span class="product-badge" style="position:absolute;top:12px;left:12px;z-index:2;">${producto.categoria}</span>
       </div>
       <div class="product-info">
-        <span class="product-category">${_labelCategoria(producto.categoria)}</span>
+        <span class="product-category">${producto.categoria}</span>
         <h3 class="product-name">${producto.nombre}</h3>
         <p style="font-size:0.8rem;color:var(--white-60);margin-top:0.25rem">Color: ${producto.color}</p>
         <div class="product-price-row">
@@ -638,13 +609,13 @@ function initProducto() {
   // Breadcrumb category link
   const breadcrumbCat = document.getElementById('breadcrumb-cat');
   if (breadcrumbCat) {
-    breadcrumbCat.textContent = _labelCategoria(producto.categoria);
+    breadcrumbCat.textContent = producto.categoria.charAt(0).toUpperCase() + producto.categoria.slice(1);
     breadcrumbCat.href = `catalogo.html?categoria=${producto.categoria}`;
   }
 
   // Fill product info
   document.getElementById('product-name').textContent = producto.nombre;
-  document.getElementById('product-category').textContent = _labelCategoria(producto.categoria);
+  document.getElementById('product-category').textContent = producto.categoria;
   document.getElementById('product-desc').textContent = producto.descripcion;
   document.getElementById('product-price').textContent = formatCurrency(producto.precio);
 
@@ -758,13 +729,11 @@ function initProducto() {
 
     // Asegurar que siempre aparezcan 3 AL 6 y 18 AL 21 aunque no estén en el sheet
     // 18 AL 21 solo aplica para modelo 095 (zapatillas infantiles)
-    // Los modelos multimarca fijos (T90, NK950, NK954) ya tienen sus bloques definidos
     console.log('baseId del producto:', producto.baseId, '| con18al21:', producto.baseId === '095');
-    const MODELOS_MULTIMARCA_FIJOS_PROD = ['T90', 'NK950', 'NK954'];
-    const esMultimarcaFijo = MODELOS_MULTIMARCA_FIJOS_PROD.includes(producto.baseId);
     const con18al21 = producto.baseId === '095';
     const rangosExistentes = tallasNormalizadas.map(t => t.rango);
-    if (!esMultimarcaFijo && !rangosExistentes.includes('3 AL 6')) {
+    const esMMProd = ['T90', 'NK950', 'NK954'].includes(producto.baseId);
+    if (!esMMProd && !rangosExistentes.includes('3 AL 6')) {
       tallasNormalizadas.push({ rango: '3 AL 6', precio: producto.precio, stock: 0 });
     }
     if (con18al21 && !rangosExistentes.includes('18 AL 21')) {
@@ -824,7 +793,7 @@ function initProducto() {
       `;
     }).join('');
 
-    // Botón "Armar Surtido Especial" — solo para modelos que lo permiten
+    // Botón "Armar Surtido Especial" con leyenda de tiempo
     if (!producto.sinSurtidoEspecial) {
       const armarWrap = document.createElement('div');
       armarWrap.style.marginTop = '1rem';
@@ -839,6 +808,7 @@ function initProducto() {
       `;
       tallasContainer.parentElement.appendChild(armarWrap);
     }
+  }
 
   // Init calculator
   updateCalculator(producto);
@@ -1383,7 +1353,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Render inicial para páginas que no necesitan datos del sheet
   if (page === 'index') initIndex();
-  // catalogo y producto esperan a Google Sheets
+  else if (page === 'catalogo') initCatalogo();
   else if (page === 'carrito') initCarrito();
 
   // Cargar desde Google Sheets
