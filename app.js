@@ -1,7 +1,7 @@
 ﻿
 /* ============================================
    PRZ CALZADO MAYOREO - app.js
-   LÃ³gica principal del sitio
+   Logica principal del sitio
    ============================================ */
 
 'use strict';
