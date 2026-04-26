@@ -1383,7 +1383,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Render inicial para páginas que no necesitan datos del sheet
   if (page === 'index') initIndex();
-  else if (page === 'catalogo') initCatalogo();
+  // catalogo y producto esperan a Google Sheets
   else if (page === 'carrito') initCarrito();
 
   // Cargar desde Google Sheets
