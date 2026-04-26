@@ -24,7 +24,7 @@ const GOOGLE_SHEETS_ID = '1-9lSJ2UdvV51nQYLoBv-w23clyoKYnR70j0_W18GeAQ';
  */
 async function cargarProductosDesdeGoogleSheets() {
   const CACHE_KEY = 'prz_productos_cache';
-  const CACHE_VERSION = 'v8';
+  const CACHE_VERSION = 'v9';
   const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
   // Mostrar productos del caché inmediatamente si existen y son de la versión correcta
@@ -218,7 +218,7 @@ function parseCSVToProducts(csv) {
     const uniqueId = Math.abs(hash);
     
     // Mapa de baseId a carpeta y prefijo
-    const carpetaMap = { 'BCÑ': 'BCN', 'CÑ': 'CNA', 'MÑ': 'MNO' };
+    const carpetaMap = { 'BCÑ': 'BCN', 'CÑ': 'CNA', 'MÑ': 'MNO', '950': 'NK950', '954': 'NK954' };
     const prefijoMap = { 'BCÑ': 'BCN', 'CÑ': 'CNA', 'MÑ': 'MNO' };
     const carpeta = carpetaMap[baseId] || baseId;
     const prefijo = prefijoMap[baseId] || baseId;
@@ -226,7 +226,7 @@ function parseCSVToProducts(csv) {
 
     let imagePath;
     if (baseId === '954') {
-      // NK954: imágenes NK954_NNN.png, variantCode es el número (108-120)
+      // NK954: imágenes NK954_NNN.png — el variantCode del sheet debe ser el número (108-120)
       imagePath = 'img/NK954/NK954_' + variantCode + '.png';
     } else if (baseId === '950') {
       // NK950: imágenes 950_CODIGO_IV.png
