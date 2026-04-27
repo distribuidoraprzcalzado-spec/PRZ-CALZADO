@@ -24,7 +24,7 @@ const GOOGLE_SHEETS_ID = '1-9lSJ2UdvV51nQYLoBv-w23clyoKYnR70j0_W18GeAQ';
  */
 async function cargarProductosDesdeGoogleSheets() {
   const CACHE_KEY = 'prz_productos_cache';
-  const CACHE_VERSION = 'v10';
+  const CACHE_VERSION = 'v11';
   const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
   // Mostrar productos del caché inmediatamente si existen y son de la versión correcta
@@ -144,7 +144,28 @@ function parseCSVToProducts(csv) {
     
     const fullId = cells[idIdx] || productId;
     const modelo = cells[modeloIdx] || '';
-    const precio = parseInt(cells[precioIdx]) || 0;
+    const precioRaw = (cells[precioIdx] || '').trim();
+    
+    // El precio puede ser un número simple o tener formato "200 2 al 5\n205 5 al 8"
+    // Parsear precios por bloque si hay múltiples líneas
+    const preciosPorBloque = {};
+    let precio = 0;
+    if (precioRaw.includes('\n') || precioRaw.match(/\d+\s+\d+\s+al\s+\d/i)) {
+      // Formato multi-precio: "200 2 al 5\n205 5 al 8"
+      const lineas = precioRaw.split(/[\n\r]+/);
+      lineas.forEach(linea => {
+        const m = linea.trim().match(/^(\d+)\s+(.+)$/);
+        if (m) {
+          const p = parseInt(m[1]);
+          const rango = m[2].trim().toUpperCase().replace(/\s+AL\s+/i, ' AL ');
+          preciosPorBloque[rango] = p;
+          if (!precio) precio = p; // primer precio como base
+        }
+      });
+      if (!precio) precio = parseInt(precioRaw) || 0;
+    } else {
+      precio = parseInt(precioRaw) || 0;
+    }
     const nombreRaw = (cells[nombreIdx] || modelo).trim();
     const nombre = nombreRaw
       .replace(/\s+tac[oó]n\s+[\d.]+\s*cm/gi, '')
@@ -243,15 +264,15 @@ function parseCSVToProducts(csv) {
     const MODELOS_MM = ['T90', '950', '954'];
     const esModeloMM = MODELOS_MM.includes(baseId);
 
-    // Para modelos multimarca: 4 bloques fijos de numeracion
+    // Para modelos multimarca: 4 bloques fijos de numeracion con precios del sheet
     let tallasFinales = tallas;
     if (esModeloMM) {
-      tallasFinales = [
-        { rango: '2 AL 5',   precio: precio, stock: 999 },
-        { rango: '3 AL 6',   precio: precio, stock: 999 },
-        { rango: '5 AL 7.5', precio: precio, stock: 999 },
-        { rango: '5 AL 8',   precio: precio, stock: 999 }
-      ];
+      const bloquesFijos = ['2 AL 5', '3 AL 6', '5 AL 7.5', '5 AL 8'];
+      tallasFinales = bloquesFijos.map(rango => {
+        // Buscar precio específico para este bloque, o usar el precio base
+        const precioBloque = preciosPorBloque[rango] || preciosPorBloque[rango.replace('.', ',')] || precio;
+        return { rango, precio: precioBloque, stock: 999 };
+      });
     }
 
     const producto = {
