@@ -24,7 +24,7 @@ const GOOGLE_SHEETS_ID = '1-9lSJ2UdvV51nQYLoBv-w23clyoKYnR70j0_W18GeAQ';
  */
 async function cargarProductosDesdeGoogleSheets() {
   const CACHE_KEY = 'prz_productos_cache';
-  const CACHE_VERSION = 'v13';
+  const CACHE_VERSION = 'v14';
   const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
   // Mostrar productos del caché inmediatamente si existen y son de la versión correcta
@@ -247,42 +247,73 @@ function parseCSVToProducts(csv) {
 
     let imagePath;
     if (baseId === '954') {
-      // NK954: imágenes 954_CODIGO_IV.png en carpeta img/954/
       imagePath = 'img/954/954_' + variantCode + '_' + altura + '.png';
     } else if (baseId === '950') {
-      // NK950: imágenes 950_CODIGO_IV.png en carpeta img/950/
       imagePath = 'img/950/950_' + variantCode + '_' + altura + '.png';
     } else if (baseId === 'T90') {
-      // T90: imágenes T90_CODIGO_LETRA.png
       imagePath = 'img/T90/T90_' + variantCode + '_' + altura + '.png';
+    } else if (baseId === 'DUNKE') {
+      imagePath = 'img/DUNKE/' + variantCode + '.png';
+    } else if (baseId === 'MJR') {
+      imagePath = 'img/MJR/' + variantCode + '.png';
+    } else if (baseId === 'PRM') {
+      imagePath = 'img/PRM/' + variantCode + '.png';
+    } else if (baseId === 'PLTF') {
+      imagePath = 'img/PLTF/' + variantCode + '.png';
     } else {
       imagePath = 'img/' + carpeta + '/' + prefijo + '_' + variantCode + '_' + altura + '.jpg';
     }
     const fallbackImage = imagePath;
 
     // Modelos multimarca fijos: T90, NK950, NK954
-    const MODELOS_MM = ['T90', '950', '954'];
+    const MODELOS_MM = ['T90', '950', '954', 'DUNKE', 'MJR', 'PRM', 'PLTF'];
     const esModeloMM = MODELOS_MM.includes(baseId);
 
-    // Para modelos multimarca: 4 bloques fijos de numeracion con precios por modelo
+    // Para modelos multimarca: bloques fijos de numeracion con precios por modelo
     let tallasFinales = tallas;
     if (esModeloMM) {
-      // Precios fijos por modelo
-      let precioAB = precio;
-      let precioCD = precio;
       if (baseId === '950' || baseId === '954') {
-        precioAB = 200;
-        precioCD = 205;
+        tallasFinales = [
+          { rango: '2 AL 5',   precio: 200, stock: 999 },
+          { rango: '3 AL 6',   precio: 200, stock: 999 },
+          { rango: '5 AL 7.5', precio: 205, stock: 999 },
+          { rango: '5 AL 8',   precio: 205, stock: 999 }
+        ];
       } else if (baseId === 'T90') {
-        precioAB = 315;
-        precioCD = 320;
+        tallasFinales = [
+          { rango: '2 AL 5',   precio: 315, stock: 999 },
+          { rango: '3 AL 6',   precio: 315, stock: 999 },
+          { rango: '5 AL 7.5', precio: 320, stock: 999 },
+          { rango: '5 AL 8',   precio: 320, stock: 999 }
+        ];
+      } else if (baseId === 'DUNKE') {
+        // DUNKE: incluir 18 AL 21 solo si la columna 18 AL 21 en el sheet dice SI
+        const tiene18al21 = cells[numeracionCols['18 AL 21']] &&
+          cells[numeracionCols['18 AL 21']].toUpperCase().trim() === 'SI';
+        tallasFinales = [];
+        if (tiene18al21) tallasFinales.push({ rango: '18 AL 21', precio: 175, stock: 999 });
+        tallasFinales.push(
+          { rango: '2 AL 5',   precio: 200, stock: 999 },
+          { rango: '3 AL 6',   precio: 200, stock: 999 },
+          { rango: '5 AL 7.5', precio: 205, stock: 999 },
+          { rango: '5 AL 8',   precio: 205, stock: 999 }
+        );
+      } else if (baseId === 'MJR') {
+        tallasFinales = [
+          { rango: '5 AL 7.5', precio: 330, stock: 999 },
+          { rango: '5 AL 8',   precio: 330, stock: 999 }
+        ];
+      } else if (baseId === 'PRM') {
+        tallasFinales = [
+          { rango: '5 AL 7.5', precio: 350, stock: 999 },
+          { rango: '5 AL 8',   precio: 350, stock: 999 }
+        ];
+      } else if (baseId === 'PLTF') {
+        tallasFinales = [
+          { rango: '2 AL 5', precio: 240, stock: 999 },
+          { rango: '3 AL 6', precio: 240, stock: 999 }
+        ];
       }
-      tallasFinales = [
-        { rango: '2 AL 5',   precio: precioAB, stock: 999 },
-        { rango: '3 AL 6',   precio: precioAB, stock: 999 },
-        { rango: '5 AL 7.5', precio: precioCD, stock: 999 },
-        { rango: '5 AL 8',   precio: precioCD, stock: 999 }
-      ];
     }
 
     const producto = {
@@ -321,7 +352,7 @@ function parseCSVToProducts(csv) {
 function determinateCategory(nombre, modelo) {
   const text = (nombre + ' ' + modelo).toLowerCase();
 
-  const MODELOS_MM_CAT = ['T90', '950', '954'];
+  const MODELOS_MM_CAT = ['T90', '950', '954', 'DUNKE', 'MJR', 'PRM', 'PLTF'];
   if (MODELOS_MM_CAT.includes(modelo)) return 'multimarca';
 
   if (text.includes('escolar')) return 'escolar';
@@ -772,7 +803,7 @@ function initProducto() {
     console.log('baseId del producto:', producto.baseId, '| con18al21:', producto.baseId === '095');
     const con18al21 = producto.baseId === '095';
     const rangosExistentes = tallasNormalizadas.map(t => t.rango);
-    const esMMProd = ['T90', '950', '954'].includes(producto.baseId);
+    const esMMProd = ['T90', '950', '954', 'DUNKE', 'MJR', 'PRM', 'PLTF'].includes(producto.baseId);
     if (!esMMProd && !rangosExistentes.includes('3 AL 6')) {
       tallasNormalizadas.push({ rango: '3 AL 6', precio: producto.precio, stock: 0 });
     }
