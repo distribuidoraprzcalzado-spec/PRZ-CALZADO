@@ -24,7 +24,7 @@ const GOOGLE_SHEETS_ID = '1-9lSJ2UdvV51nQYLoBv-w23clyoKYnR70j0_W18GeAQ';
  */
 async function cargarProductosDesdeGoogleSheets() {
   const CACHE_KEY = 'prz_productos_cache';
-  const CACHE_VERSION = 'v15';
+  const CACHE_VERSION = 'v16';
   const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
   // Mostrar productos del caché inmediatamente si existen y son de la versión correcta
@@ -269,9 +269,7 @@ function parseCSVToProducts(csv) {
     }
     const fallbackImage = imagePath;
 
-    // Modelos multimarca fijos: T90, NK950, NK954
-    const MODELOS_MM = ['T90', '950', '954', 'DUNKE', 'MJR', 'PRM', 'PLTF'];
-    const esModeloMM = MODELOS_MM.includes(baseId);
+    // Modelos multimarca fijos: T90, NK950, NK954, EC, MJR, PRM, PLTF
 
     // Para modelos multimarca: bloques fijos de numeracion con precios por modelo
     let tallasFinales = tallas;
