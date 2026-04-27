@@ -33,7 +33,6 @@ async function cargarProductosDesdeGoogleSheets() {
     if (cached && cached.version === CACHE_VERSION && cached.ts && (Date.now() - cached.ts) < CACHE_TTL && cached.data?.length > 0) {
       PRODUCTOS.length = 0;
       PRODUCTOS.push(...cached.data);
-      console.log('Cache hit: ' + PRODUCTOS.length + ' productos');
       _refrescarSheetEnBackground(CACHE_KEY, CACHE_VERSION);
       return PRODUCTOS;
     }
@@ -65,13 +64,10 @@ async function _fetchSheet(CACHE_KEY, CACHE_VERSION) {
       try {
         localStorage.setItem(CACHE_KEY, JSON.stringify({ version: CACHE_VERSION, ts: Date.now(), data: productos }));
       } catch(e) {}
-      console.log('Sheet cargado: ' + productos.length + ' productos');
     }
     return PRODUCTOS;
   } catch (error) {
-    if (error.name === 'AbortError') {
-      console.warn('Google Sheets timeout - usando productos locales');
-    } else {
+    if (error.name !== 'AbortError') {
       console.error('Error cargando Google Sheets:', error.message);
     }
     return PRODUCTOS;
@@ -144,28 +140,7 @@ function parseCSVToProducts(csv) {
     
     const fullId = cells[idIdx] || productId;
     const modelo = cells[modeloIdx] || '';
-    const precioRaw = (cells[precioIdx] || '').trim();
-    
-    // El precio puede ser un número simple o tener formato "200 2 al 5\n205 5 al 8"
-    // Parsear precios por bloque si hay múltiples líneas
-    const preciosPorBloque = {};
-    let precio = 0;
-    if (precioRaw.includes('\n') || precioRaw.match(/\d+\s+\d+\s+al\s+\d/i)) {
-      // Formato multi-precio: "200 2 al 5\n205 5 al 8"
-      const lineas = precioRaw.split(/[\n\r]+/);
-      lineas.forEach(linea => {
-        const m = linea.trim().match(/^(\d+)\s+(.+)$/);
-        if (m) {
-          const p = parseInt(m[1]);
-          const rango = m[2].trim().toUpperCase().replace(/\s+AL\s+/i, ' AL ');
-          preciosPorBloque[rango] = p;
-          if (!precio) precio = p; // primer precio como base
-        }
-      });
-      if (!precio) precio = parseInt(precioRaw) || 0;
-    } else {
-      precio = parseInt(precioRaw) || 0;
-    }
+    const precio = parseInt(cells[precioIdx]) || 0;
     const nombreRaw = (cells[nombreIdx] || modelo).trim();
     const nombre = nombreRaw
       .replace(/\s+tac[oó]n\s+[\d.]+\s*cm/gi, '')
@@ -803,7 +778,6 @@ function initProducto() {
 
     // Asegurar que siempre aparezcan 3 AL 6 y 18 AL 21 aunque no estén en el sheet
     // 18 AL 21 solo aplica para modelo 095 (zapatillas infantiles)
-    console.log('baseId del producto:', producto.baseId, '| con18al21:', producto.baseId === '095');
     const con18al21 = producto.baseId === '095';
     const rangosExistentes = tallasNormalizadas.map(t => t.rango);
     const esMMProd = ['T90', '950', '954', 'EC', 'MJR', 'PRM', 'PLTF'].includes(producto.baseId) ||
@@ -970,7 +944,6 @@ function changeQty(tallaId, delta) {
 
 function onQtyChange(tallaId, value) {
   let val = Math.max(0, parseInt(value) || 0);
-  // Redondear al mÃºltiplo de 6 mÃ¡s cercano
   if (val > 0 && val % 6 !== 0) {
     val = Math.round(val / 6) * 6;
     if (val === 0) val = 6;
@@ -1444,7 +1417,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (!existe) {
         // Producto no encontrado en caché — limpiar y recargar del sheet
-        console.log('Producto no en caché, recargando sheet...');
         localStorage.removeItem('prz_productos_cache');
         await cargarProductosDesdeGoogleSheets();
       }
