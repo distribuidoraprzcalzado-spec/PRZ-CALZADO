@@ -24,7 +24,7 @@ const GOOGLE_SHEETS_ID = '1-9lSJ2UdvV51nQYLoBv-w23clyoKYnR70j0_W18GeAQ';
  */
 async function cargarProductosDesdeGoogleSheets() {
   const CACHE_KEY = 'prz_productos_cache';
-  const CACHE_VERSION = 'v12';
+  const CACHE_VERSION = 'v13';
   const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
   // Mostrar productos del caché inmediatamente si existen y son de la versión correcta
@@ -264,13 +264,19 @@ function parseCSVToProducts(csv) {
     const MODELOS_MM = ['T90', '950', '954'];
     const esModeloMM = MODELOS_MM.includes(baseId);
 
-    // Para modelos multimarca: 4 bloques fijos de numeracion con precios del sheet
+    // Para modelos multimarca: 4 bloques fijos de numeracion con precios por modelo
     let tallasFinales = tallas;
     if (esModeloMM) {
-      // Precios fijos por modelo: A/B tienen precio base, C/D tienen precio mayor
-      // Leer del sheet si hay multi-precio, sino usar precio base para todos
-      const precioAB = preciosPorBloque['2 AL 5'] || preciosPorBloque['3 AL 6'] || precio;
-      const precioCD = preciosPorBloque['5 AL 8'] || preciosPorBloque['5 AL 7.5'] || precio;
+      // Precios fijos por modelo
+      let precioAB = precio;
+      let precioCD = precio;
+      if (baseId === '950' || baseId === '954') {
+        precioAB = 200;
+        precioCD = 205;
+      } else if (baseId === 'T90') {
+        precioAB = 315;
+        precioCD = 320;
+      }
       tallasFinales = [
         { rango: '2 AL 5',   precio: precioAB, stock: 999 },
         { rango: '3 AL 6',   precio: precioAB, stock: 999 },
