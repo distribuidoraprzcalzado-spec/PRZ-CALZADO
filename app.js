@@ -24,7 +24,7 @@ const GOOGLE_SHEETS_ID = '1-9lSJ2UdvV51nQYLoBv-w23clyoKYnR70j0_W18GeAQ';
  */
 async function cargarProductosDesdeGoogleSheets() {
   const CACHE_KEY = 'prz_productos_cache';
-  const CACHE_VERSION = 'v11';
+  const CACHE_VERSION = 'v12';
   const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
   // Mostrar productos del caché inmediatamente si existen y son de la versión correcta
@@ -267,12 +267,16 @@ function parseCSVToProducts(csv) {
     // Para modelos multimarca: 4 bloques fijos de numeracion con precios del sheet
     let tallasFinales = tallas;
     if (esModeloMM) {
-      const bloquesFijos = ['2 AL 5', '3 AL 6', '5 AL 7.5', '5 AL 8'];
-      tallasFinales = bloquesFijos.map(rango => {
-        // Buscar precio específico para este bloque, o usar el precio base
-        const precioBloque = preciosPorBloque[rango] || preciosPorBloque[rango.replace('.', ',')] || precio;
-        return { rango, precio: precioBloque, stock: 999 };
-      });
+      // Precios fijos por modelo: A/B tienen precio base, C/D tienen precio mayor
+      // Leer del sheet si hay multi-precio, sino usar precio base para todos
+      const precioAB = preciosPorBloque['2 AL 5'] || preciosPorBloque['3 AL 6'] || precio;
+      const precioCD = preciosPorBloque['5 AL 8'] || preciosPorBloque['5 AL 7.5'] || precio;
+      tallasFinales = [
+        { rango: '2 AL 5',   precio: precioAB, stock: 999 },
+        { rango: '3 AL 6',   precio: precioAB, stock: 999 },
+        { rango: '5 AL 7.5', precio: precioCD, stock: 999 },
+        { rango: '5 AL 8',   precio: precioCD, stock: 999 }
+      ];
     }
 
     const producto = {
